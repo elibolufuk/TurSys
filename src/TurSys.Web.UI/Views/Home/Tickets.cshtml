@@ -1,0 +1,67 @@
+﻿@using TurSys.Web.UI.Models.BaseModels
+@using TurSys.Web.UI.Models.TicketModels
+@using TurSys.Web.UI.Options.Interfaces
+@using TurSys.Web.UI.Settings
+@inject IApplicationOptions ApplicationOptions
+@model TicketViewModel
+@{
+    ViewData["Title"] = "Arama sonucu";
+}
+<section>
+    <a class="go-to-back" href="/">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8" />
+        </svg>
+    </a>
+    <div class="ticket-header">
+        <div class="departure">@(Model.Response.Data?.Count > 0 ? $"{Model.Origin} - {Model.Destination}" : "Seçilen tarihde bilet bulunamadı")</div>
+        <div class="date" id="searchDate" data-val="@Model.Date.ToString("yyyy-MM-dd")"></div>
+    </div>
+</section>
+@if (Model.Response.Data?.Count > 0)
+{
+    <section class="ticket">
+        @{
+            foreach (var journey in Model.Response.Data)
+            {
+                <div class="ticket-item">
+                    <div class="detail">
+                        <div class="table">
+                            <div class="row">
+                                <div class="cell title">
+                                    KALKIŞ
+                                </div>
+                                <div class="cell arrow">
+                                </div>
+                                <div class="cell title">
+                                    VARIŞ
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="cell content">
+                                    @journey.Journey.Departure.ToString("HH:mm")
+                                </div>
+                                <div class="cell arrow">
+                                    -
+                                </div>
+                                <div class="cell content">
+                                    @journey.Journey.Arrival.ToString("HH:mm")
+                                </div>
+                            </div>
+                        </div>
+                        <div class="description">@journey.Journey.Origin - @journey.Journey.Destination</div>
+                    </div>
+                    <div class="price">
+                        <span>@journey.Journey.InternetPrice @journey.Journey.Currency</span>
+                    </div>
+                </div>
+            }
+        }
+    </section>
+}
+@section Scripts {
+    <script src="~/js/views/home/ticket.js?v=@ApplicationOptions.StaticVersion"></script>
+    <script>
+        turSys.ticket.searchDateWrite(document.getElementById('searchDate').getAttribute("data-val"));
+    </script>
+}
